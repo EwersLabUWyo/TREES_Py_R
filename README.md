@@ -4,4 +4,4 @@ This repository has been created to store files for work that is currently in pr
 
 Updates posted here:
 
-6/15/16 - Initial version of bark beetle/blue stain fungi xylem scaling module coded in R has been uploaded to the repository.
+6/15/16 - Initial version of blue stain fungi xylem scaling module coded in R has been uploaded to the repository.
