@@ -16,11 +16,11 @@
 rm(list=ls())
 
 #call to ggplot package
-library(ggplot2)
+#library(ggplot2)
 
 #-----------------------------------------------------------------------------------------------------
 
-setwd("C:\\Users\\Dave\\Documents\\TREES_Py_R\\blue_stain_xylem_scaling_module")
+setwd("C:\\Users\\Matthew\\Documents\\GitHub\\TREES_Py_R\\blue_stain_xylem_scaling_module")
 
 
 # read in the temperature and growth rate of blue stain fungi from Moore and Six 2015
@@ -68,7 +68,7 @@ xylem_scalar <- function(temp_obs,gr_obs,at_obs,xs_obs){
   for (i in 2:length(sim_bs_bm)){
     sim_bs_bm[i] <- sim_bs_bm[i-1] + (a * exp(-0.5*((at_obs[i]-b)/c)^2))
   }
-
+  
   # fit model of simulated blue stain fungal growth to percent sapflux decline 
   # using a sigmoid function (numerator is set to 1, in order to get 0-100%)
   xs.fit <- nls(xs_obs ~ 1/(1+a2*exp(b2*sim_bs_bm)), start = list(a2 = 0.04, b2 = 0.0006))
@@ -93,27 +93,31 @@ CP_xs_sim <- xylem_scalar(temp_obs,gr_obs,at_obs,xs_obs)
 CP_xs_obs <- xs_obs
 CP_date <- as.POSIXct(dates,format="%m/%d/%Y")
 
+# print(CP_xs_sim)
+# print(CP_xs_obs)
+# print(CP_date)
+
 ggdata <- cbind.data.frame(CP_date,CP_xs_sim,CP_xs_obs)
-
-CP_test_plot <- ggplot(ggdata) + 
-                geom_point(aes(x=CP_date, y=CP_xs_obs, shape ='observed', linetype = 'observed', color ='observed',size ='observed')) + 
-                geom_line(aes(x=CP_date, y=CP_xs_sim, shape ='simulated', linetype = 'simulated', color ='simulated',size ='simulated')) +
-                scale_shape_manual(values=c(19, NA)) + 
-                scale_linetype_manual(values=c(0, 1)) +
-                scale_size_manual(values=c(4,1.5)) +
-                scale_color_manual(values=c("blue","springgreen3")) +
-                xlab(NULL) + 
-                ylab("fraction of functional xylem") +
-                ggtitle("CP sapflux decline 2009") +
-                theme(axis.text=element_text(size=18),
-                      strip.text=element_text(size=18),
-                      title=element_text(size=18),
-                      text=element_text(size=18),
-                      legend.text=element_text(size=18),
-                      legend.title=element_blank(),
-                      legend.key = element_blank())
-
-CP_test_plot
+# 
+# CP_test_plot <- ggplot(ggdata) + 
+#                 geom_point(aes(x=CP_date, y=CP_xs_obs, shape ='observed', linetype = 'observed', color ='observed',size ='observed')) + 
+#                 geom_line(aes(x=CP_date, y=CP_xs_sim, shape ='simulated', linetype = 'simulated', color ='simulated',size ='simulated')) +
+#                 scale_shape_manual(values=c(19, NA)) + 
+#                 scale_linetype_manual(values=c(0, 1)) +
+#                 scale_size_manual(values=c(4,1.5)) +
+#                 scale_color_manual(values=c("blue","springgreen3")) +
+#                 xlab(NULL) + 
+#                 ylab("fraction of functional xylem") +
+#                 ggtitle("CP sapflux decline 2009") +
+#                 theme(axis.text=element_text(size=18),
+#                       strip.text=element_text(size=18),
+#                       title=element_text(size=18),
+#                       text=element_text(size=18),
+#                       legend.text=element_text(size=18),
+#                       legend.title=element_blank(),
+#                       legend.key = element_blank())
+# 
+# CP_test_plot
 
 #-----------#
 # save plot #
