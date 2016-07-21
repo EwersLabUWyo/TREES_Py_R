@@ -21,7 +21,7 @@ library(ggplot2)
 
 #-----------------------------------------------------------------------------------------------------
 # set the current working directory - make sure to change this as needed
-setwd("C:\\Users\\Dave\\Documents\\TREES_Py_R\\water_stress_module")
+setwd("C:\\Users\\Matthew\\Documents\\GitHub\\TREES_Py_R\\water_stress_module")
 
 
 # read in the water potential and percent loss conductance (PLC) data from laboratory xylem analysis (Heather Speckman)
