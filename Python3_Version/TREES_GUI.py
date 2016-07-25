@@ -45,13 +45,17 @@ class MainMenu(object):
         
         # defining titles for frames
         self.frame_titles = titles = []
-        titles.insert(0, 'Working Directory: ')
-        titles.insert(1, 'Blue Stain Xylem: ')
-        titles.insert(2, 'Daily Sap Flux Decline: ')
-        titles.insert(3, 'Water Stress: ')
+        
+        titles.insert(0, 'Blue Stain Xylem:                   ')
+        titles.insert(1, 'Daily Sap Flux Decline:             ')
+        titles.insert(2, 'Water Stress:                       ')
+        titles.insert(3, 'Gsv0:                               ')
+        titles.insert(4, 'Working Directory for Xylem Scalar: ')
+        titles.insert(5, 'Working Directory for Water Stress: ')
+        titles.insert(6, 'Working Directory for Gsv0:         ')
         
         # Hard code this for now, come back and changelater
-        calcs = ['Xylem Scalar', 'Water Stress']
+        calcs = ['Xylem Scalar', 'Water Stress', 'Gsv0']
         
         # populate window with widgets
         utils.makeMain(root, titles, calcs, **opts)

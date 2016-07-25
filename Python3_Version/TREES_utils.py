@@ -7,13 +7,17 @@ Created on Mon Jul 11 12:13:42 2016
 import os.path as path
 import tkinter
 from tkinter import filedialog as fd
-from tkinter import constants, Label, Button, Entry, Frame
-from tkinter import StringVar, E, W, S
+from tkinter import Label, Button, Entry, Frame
+from tkinter.constants import BOTTOM, BOTH
+from tkinter import StringVar, E, W
+
 import matplotlib.pyplot as plt
 
 import mbox
-import blue_stain as xsmod
-import water_stress as wsmod
+import blue_stain_xylem_scaling_module as xsmod
+import water_stress_module as wsmod
+import gsv0
+import gs_ref_module as gsr
 
 def makeMain(root, fields, calcs, **opts):
    """
@@ -37,12 +41,13 @@ def makeMain(root, fields, calcs, **opts):
    #create a Frame to hold the widgets
    frame = Frame(root)
    frame.pack(expand=True,
-              fill=constants.BOTH)
+              fill=BOTH)
    frame.columnconfigure(1, weight=1)
+   
    #create a Frame to hold the calculate buttons
    frame2 = Frame(root)
    frame2.pack(expand=True,
-               fill=constants.BOTH)
+               fill=BOTH)
    frame2.columnconfigure(0, weight=1)
    
    for field in fields:
@@ -59,10 +64,10 @@ def makeMain(root, fields, calcs, **opts):
       ent.grid(row = row, 
                column = 1,
                sticky=W+E)
-      if row == 0:
+      if "Directory" in field:
           btn = Button(frame,
                        text = 'Select the directory',
-                       command = lambda row=row : __dirToEnt(StrVar[row],
+                       command = lambda row=row : __dir2Ent(StrVar[row],
                                                                 **dirOpt))
           fileOpt['initialdir'] = btn   
       else:
@@ -76,22 +81,12 @@ def makeMain(root, fields, calcs, **opts):
       entries.append((field, ent, btn))
       row += 1
       if row == len(fields):
-          runBtn = Button(frame2,
-                          text = "Calculate" + calcs[0],
-                          command = lambda field=calcs[0] : calculate(StrVar,
-                                                                        field))
-          runBtn.grid(row=row+1,
-                      column=3,
-                      sticky=E+S)
-          runBtn = Button(frame2,
-                          text = "Calculate" + calcs[1],
-                          command = lambda field=calcs[1] : calculate(StrVar,
-                                                                        field))
-          runBtn.grid(row=row+1,
-                      column=2,
-                      sticky=W+S)
-      
-#   return entries
+          for calc in calcs:
+              runBtn = Button(frame2,
+                              text = "Calculate " + calc,
+                              command = lambda field=calc : calculate(StrVar,
+                                                                      field))
+              runBtn.pack(side = BOTTOM)
 
 
 def calculate(StrVar, title):
@@ -99,35 +94,82 @@ def calculate(StrVar, title):
     Button function to calculate the Xylem Scalar or Water Stress.
     Input:
        StrVar = tuple of String Variables holding names of directory and files
-       args = title of calculation to perform
+       title = title of calculation to perform
     Output:
         Graph of the equation chosen
     """
-    # Get all the file and directory names
-    work_dir = StrVar[0].get()
+    # TO DO: MAKE THIS SCALABLE
+    # Set the appropriate working directory
+    if title == 'Xylem Scalar':
+        work_dir = StrVar[0].get()
+    elif title == 'Water Stress':
+        work_dir = StrVar[5].get()
+    elif title == 
+
+    # Get all the file and directory names        
     if __checkDir(work_dir):
-        xs_obs = StrVar[1].get()
-        sf_obs = StrVar[2].get()
-        ws_obs = StrVar[3].get()
+        xs_obs = StrVar[0].get()
+        sf_obs = StrVar[1].get()
+        ws_obs = StrVar[2].get()
+        atm = StrVar[3].get()
         xs_obs = str(xs_obs)
         sf_obs = str(sf_obs)
         ws_obs = str(ws_obs)
-    
+        atm = str(atm)        
+        
     # Choose the calculation to do using name of button
-    if title == 'Xylem Scalar' and __checkFile(xs_obs) and __checkFile(sf_obs):
-        # Check if calculation is already done. If not, do calculation
-        xylemScalar = xsmod.XylemScalar(work_dir, xs_obs, sf_obs)
-        mod = xylemScalar
+    if title == 'Gsref' and __checkFile(atm):
+        if __checkFile(ws_obs) and __checkFile(xs_obs) and __checkFile(sf_obs):
+            # Calculate gsv0
+            gsv_0 = gsv0.Gsv_0()
+            xs = xsmod.XylemScalar(work_dir, xs_obs, sf_obs)
+            # Unpack info from xs calculation
+            gsv_0.xs['obs'] = xs.obs
+            gsv_0.xs['sim'] = xs.sim
+            
+            # delete xs to reduce memory usage
+            del(xs)
+
+            ws = wsmod.WaterStress(work_dir, ws_obs)
+            
+            # Unpack info from ws calculation
+            gsv_0.ws['obs'] = ws.obs
+            gsv_0.ws['sim'] = ws.sim
+            gsv_0.r_sqrs['ws'] = ws.r_sqr
+            
+            # delete ws to reduce memory usage
+            del(ws)
+            
+            # calculate and store gs_ref and the results 
+            gs = gsr.GsRef(work_dir, 'PICO_atm_demand_data.csv')  
+            
+            gsv_0.gs['obs'] = gs.gs_obs
+            gsv_0.gs['sim'] = gs.gs_sim
+            gsv_0.d_obs = gs.d_obs
+            gsv_0.r_sqrs['gs'] = gs.r_sqr
+            gsv_0.gs['ref'] = gs.gs_ref
+            
+            # delete gs to reduce memory usage
+            del(gs)
+            
+            # Calculate gsv_0                     
+            gsv_0.calculate()
+            
+            
     elif title == 'Water Stress' and __checkFile(ws_obs):
-        waterStress = wsmod.WaterStress(work_dir, ws_obs)
-        mod = waterStress
-    
-    # Ask user if they want to plot
-    toPlot = mbox.mbox("Do you want to plot the models?",
+        ws = wsmod.WaterStress(work_dir, ws_obs)
+        mod = ws
+    elif title == 'Xylem Scalar' and __checkFile(xs_obs):
+        xs = xsmod.XylemScalar(work_dir, xs_obs, sf_obs)
+        mod = xs
+                     
+    # Ask user if they want to plot when not Gsref
+    if not title == "Gsref":
+        toPlot = mbox.mbox("Do you want to plot the models?",
                              ('Yes','yes'),
                              ('No','no'))
-    if toPlot == 'yes':
-        plot(mod, title)
+        if toPlot == 'yes' :
+            plot(mod, title)
     # TO DO:  Add more functionality to this.
     # Maybe give a list with radio buttons for user to choose?
 
@@ -191,7 +233,7 @@ def __checkDir(working_dir):
     """
     if working_dir == '':
         # show popup to alert user of mistake
-        mbox.mbox(msg = "Please choose a directory in which to work")
+        mbox.mbox(msg = "Please choose a directory in which to work", b2=None)
         return False
     else:
         return True
@@ -217,7 +259,7 @@ def __checkFile(filename):
            message += filename + " is not in the correct format."
            message += "\nAccepted filetypes are .csv and .txt"
            # Show popup with message to alert user
-           mbox.mbox(msg = message)
+           mbox.mbox(msg = message, b2=None)
            return False
            
     except Exception as e:
@@ -225,7 +267,7 @@ def __checkFile(filename):
         print(e)
 
 
-def __dirToEnt(var, **dirOpt):
+def __dir2Ent(var, **dirOpt):
     """
     Sets the entry's textvariable to selected working dir
     """

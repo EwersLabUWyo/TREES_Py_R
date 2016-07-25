@@ -2,65 +2,66 @@
 # Created June 27, 2016
 # mattheworion.cook@gmail.com
 
-# Update 7/15/16
+# Update July 15, 2016
 # added water stress and converted to object-oriented structure
 
-# Update 7/21/16
+# Update July 21, 2016
 # added gs ref and gsv0 calculations
 
-from numpy import log
+# Update July 22, 2016
+# added gsv0 calculation and memory use reduction
+
 
 import blue_stain_xylem_scaling_module as bsmod
 import water_stress_module as wsmod
 import gs_ref_module as gsr
-#import TREES_utils as utils
+import gsv0
 
 
-# bs calculates/stores a simulated xylem scalar model and its plot
-xs = bsmod.XylemScalar('C:\\Users\\Matthew\\Documents'
-                           +'\\Github\\TREES_Py_R\\Python3_Version\\'
-                           +'blue_stain_xylem_scaling_module',
+# initialize gsv_0 object for storage
+gsv_0 = gsv0.Gsv_0()
+
+# define working directory
+work_dir = 'C:\\Users\\Matthew\\Documents\\Github\\TREES_Py_R\\Python3_Version\\'
+
+# xs calculates/stores a simulated xylem scalar model and its plot against the
+# observed data                   
+xs = bsmod.XylemScalar(work_dir + 'blue_stain_xylem_scaling_module',
                            'blue_stain_temp_and_growth_rate.csv',
                            'CP_daily_at_and_perc_sap_flux_decline.csv')
 
-                   
-ws = wsmod.WaterStress('C:\\Users\\Matthew\\Documents'
-                           +'\\Github\\TREES_Py_R\\Python3_Version\\'
-                           +'water_stress_module',
-                           'PICO_ws_obs_data.csv')
-                      
-gs_ref, r_sqr, d_obs = gsr.gsRef('C:\\Users\\Matthew\\Documents'
-                            +'\\Github\\TREES_Py_R\\Python3_Version',
-                            'PICO_atm_demand_data.csv')
+# Unpack info from xs calculation
+gsv_0.xs['obs'] = xs.obs
+gsv_0.xs['sim'] = xs.sim
 
-# calculate m scalar                            
-m = gs_ref * 0.6
+# delete xs to reduce memory usage
+del(xs)
 
-# duplicate d_obs readings to match size of gs_ref
-ws_sim_len = len(ws.sim)
-d_obs_len = len(d_obs)
-time_steps = int(ws_sim_len/d_obs_len)
-i = 0
-j = 1
-d_extend = []
-rem = ws_sim_len % d_obs_len
-goal_len = (ws_sim_len - rem)
+# ws calculates/stores a simulated xylem scalar model and its plot against the
+# observed data                   
+ws = wsmod.WaterStress(work_dir + 'water_stress_module', 'PICO_ws_obs_data.csv')
 
-while len(d_extend) < goal_len:  
-    while j <= time_steps:
-        d_extend.append(d_obs[i])
-        j += 1
-    j = 1
-    i += 1
+# Unpack info from ws calculation
+gsv_0.ws['obs'] = ws.obs
+gsv_0.ws['sim'] = ws.sim
+gsv_0.r_sqrs['ws'] = ws.r_sqr
+
+# delete ws to reduce memory usage
+del(ws)
+   
+# calculate and store gs_ref and the results                   
+gs = gsr.GsRef(work_dir, 'PICO_atm_demand_data.csv')
+
+gsv_0.gs['obs'] = gs.gs_obs
+gsv_0.gs['sim'] = gs.gs_sim
+gsv_0.d_obs = gs.d_obs
+gsv_0.r_sqrs['gs'] = gs.r_sqr
+gsv_0.gs['ref'] = gs.gs_ref
+    
+# delete gs to reduce memory usage
+del(gs)
+
+# Calculate gsv_0                     
+gsv_0.calculate()
 
 
-while rem > 0:
-    d_extend.append(d_obs[i-1])
-    rem -= 1
-
-# calculate gsv0 for each time step
-gsv_0 = ws.sim * gs_ref - (m * log(d_extend)) 
-
-print(gsv_0)
-                          
-#plot(ws.sim, ws.obs)
