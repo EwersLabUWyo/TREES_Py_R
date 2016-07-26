@@ -2,6 +2,9 @@
 # Created June 27, 2016
 # mattheworion.cook@gmail.com
 
+# Update July 25, 2016
+# Improved documentation of class and methods
+
 from os import chdir
 
 import numpy as np
@@ -11,16 +14,48 @@ class XylemScalar(object):
     """
     Module to downscale xylem conductance (transpiration) as a function of blue
     stain fungal infection.
+    
+    Args:
+        work_dir(string):
+            Stores the path of the directory in which to look for the data
+            files.
+            
+        csv_gr(string):
+            Store the filename of the .csv file containing temperature and 
+            observed blue stain xylem growth.
+            Data should be stored as:
+                column one: temperature 
+                column two: growth
+                        
+        csv_sfd(string):
+            Store the filename of the .csv file containing dates, mean daily
+            air temperature in degrees C, and observed xylem scalar. 
+            Data should be stored as: 
+                column one:   date as mm/dd/yyyy
+                column two:   mean daily air temperature in degrees C
+                column three: xylem scalar
+            
+        NOTE: Headers for each column are expected, otherwise the first data
+              point in the .csv file will be ignored.
+            
+               
+    Attributes:
+        xs_sim(numpy array):
+            Stores simulated xylem scalars.
+            
+        xs_obs(tuple):
+            Stores observed xylem scalars (faster and immutable).
+            
+        graph(matplotlib plot):
+            Plot of the simulated and observed xylem scalars.
+        
+        coeff(array):
+            Stores optimized coefficients for xylem scalar calculation.
+            
     """
     def __init__(self, work_dir, csv_gr, csv_sfd):
         """
-        Stores information from Xylem Scalar module
-        
-        Attributes:
-            xs_sim = List of simulated xylem scalars
-            xs_obs = tuple of observed xylem scalars (faster and immutable)
-            graph = plot of the simulated and observed xylem scalars
-            coeff = coefficients for xylem scalar module
+        Stores information from Xylem Scalar module.
         """
         self.sim = []
         self.obs = ()
@@ -36,19 +71,20 @@ class XylemScalar(object):
         Look in the readme to see how this works, for now.
         
         NOTE: When reading from csv, the script skips the first line (headers)
-            so if you do not have headers and do not wish to lose the first row of 
-            data points, add an extra row at the top of your CSV file.
+            so if you do not have headers and do not wish to lose the first row
+            of data points, add an extra row at the top of your CSV file.
         
         Inputs:
-            work_dir = working directory for where you have your CSV files stored
+            work_dir = working directory for where you have your CSV files 
+                       stored
         
-            csv_gr = the CSV file containing your temperature and observed growth blue
-                      stain xylem growth
+            csv_gr = the CSV file containing your temperature and observed 
+                     blue stain xylem growth
         
             csv_sfd = the CSV containing columns for:
                        date as mm/dd/yyyy
                        mean daily air temperature in degrees C
-                       xylem scalar
+                       mean daily percent sap flux decline
         
         Attributes:
             xs_sim = the simulated xylem scalar model
@@ -90,6 +126,7 @@ class XylemScalar(object):
                                            'formats':('O',
                                                       'float64',
                                                       'float64')})
+                                                      
         except Exception as e:
             print("Something went wrong.  Check that " + csv_sfd + 
             " is in the correct format.")
@@ -102,6 +139,7 @@ class XylemScalar(object):
     
     # Define model function for Gaussian fit
     def __gauss(self, x, a, b, c):
+        """Gaussian fit function for optimizing curve """
         return a*np.exp(-0.5*((x-b)/c)**2)
     
     
@@ -121,10 +159,10 @@ class XylemScalar(object):
         from previous data (temp_gr) and observed mean daily percent sap flux
         decline with mean daily air temperatures (sf_decline).
     
-        input:
-        temp_gr = 2-column array with temperature and growth rate.
-        sf_decline = 2-column array with observed mean daily air temperatures and
-                     mean daily percent sap flux decline
+        Args:
+            temp_gr = 2-column array with temperature and growth rate.
+            sf_decline = 2-column array with observed mean daily air 
+                        temperatures and mean daily percent sap flux decline
     
         output:
         xs_sim = simulated water stress model
