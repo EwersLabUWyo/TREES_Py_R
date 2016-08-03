@@ -22,7 +22,7 @@ library(ggplot2)
 
 #-----------------------------------------------------------------------------------------------------
 # set the current working directory - make sure to change this as needed
-setwd("C:\\Users\\Matthew\\Documents\\Github\\TREES_Py_R\\Gs_ref_module")
+setwd("C:\\Users\\Dave\\Documents\\TREES_Py_R\\Gs_ref_module")
 
 
 # read in the vapor pressure deficit (VPD) and non-water-stressed, non-photosynthesis-limited 

@@ -120,7 +120,7 @@ def makeMain(root, fields, calcs, exists=False, **opts):
                                                                       field))
               runBtn.pack(side = LEFT, padx = 2)
    ws = WorkSpace(StrVar, opts)
-#   ws.save()
+   ws.save()
 
 
 def calculate(StrVar, title):
@@ -239,7 +239,7 @@ def __makeMenuBar(window):
     menubar = tkinter.Menu(window)
     filemenu = tkinter.Menu(menubar, tearoff = 0)
     filemenu.add_command(label = "Exit", command = window.destroy)
-#    filemenu.add_command(label = "Save Workspace", command = WorkSpace.save())
+    filemenu.add_command(label = "Save Workspace", command = WorkSpace.save())
     menubar.add_cascade(label = "File", menu = filemenu)
     window.config(menu = menubar)
  
