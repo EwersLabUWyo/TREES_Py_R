@@ -138,16 +138,6 @@ def calculate(StrVar, title):
         Make scalable with regards to button creation.
         
     """
-    # TO DO: MAKE THIS SCALABLE
-    
-    # Due to restructure of file directory, this is no longer necessary
-    #    # Set the appropriate working directory
-    #    if title == 'Xylem Scalar':
-    #        work_dir = StrVar[0].get()
-    #    elif title == 'Water Stress':
-    #        work_dir = StrVar[5].get()
-    #    elif title == 'Gsv0':
-    #        work_dir = 
     
     # Set working directory in which to look for files
     work_dir = StrVar[4].get()
@@ -192,15 +182,15 @@ def calculate(StrVar, title):
             
     elif title == 'Water Stress' and __checkFile(ws_obs, tag = 'c'):
         ws = wsmod.WaterStress(work_dir, ws_obs)
-        __plot(ws, title)
+        plot(ws, title)
         
     elif (title == 'Xylem Scalar' and __checkFile(xs_obs, tag = 'c') 
             and __checkFile(sf_obs, tag = 'c')):
         xs = xsmod.XylemScalar(work_dir, xs_obs, sf_obs)
-        __plot(xs, title)
+        plot(xs, title)
 
 
-def __plot(mod, title):
+def plot(mod, title):
     """
     Plots the simulated and observed models using matplotlib.  Window
     will popup and user has option to save the plot.
@@ -221,8 +211,8 @@ def __plot(mod, title):
     if toPlot == 'yes' :
         mod.graph = plt.figure()
         plt.plot()
-        plt.plot(mod.sim, 'r-', label = 'simulated')
-        plt.plot(mod.obs, 'b.', label = 'observed')
+        plt.plot(mod.sim, 'r-', label='simulated')
+        plt.plot(mod.obs, 'b.', label='observed')
         plt.title(title)
         plt.legend()     
         plt.show() 

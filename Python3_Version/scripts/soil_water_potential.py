@@ -7,24 +7,29 @@ mattheworion.cook@gmail.com
 from math import exp
 
 def Sn(S, n):
+    """Calculate S^n for each item in S"""
     for s in S:
-        yield pow(s, n)
+        yield s ** n
 
 
 def Sm(S, m):
+    """Calculate [1-(1 - S^(1/m))^m]^2"""
     for s in S:
-       yield pow(1 - pow(1 - pow(s, 1/m), m), 2.0)
+        tmp = s ** (1/m)
+        tmp = 1 - tmp
+        tmp = tmp ** m
+        tmp = 1 - tmp
+        tmp = tmp ** 2.0
+        yield tmp
 
 
-#Calculate water potential, MPa
-#Assues bubbling pressure in cm
 def soil_water_potential(porosity,
                          bubbling_pressure,
                          pore_size_index,
                          residual,
                          theta=2):
     """
-    Calculate soil water potential.
+    Calculate soil water potential, MPa. Assumes bubbling pressure in cm
     """
     
     #initialize variables
@@ -44,13 +49,13 @@ def soil_water_potential(porosity,
     #Use van Ganuchten model of soil water potential
     psi_soil = -0.0001019977334*bubbling_pressure 
 
-    sPow = pow(S,-1/m)-1    
-    psi_soil *= pow(sPow, 1/n)
+    sPow = S ** (-1/m) - 1    
+    psi_soil *= sPow ** (1/n)
     
     # If psi_soil is 0.0, it is actually -0.0
     # so we need to take the absolute value to get a correct value of 0.0
     if psi_soil == -0.0:
-        psi_soil = abs(psi_soil)
+        psi_soil = 0.0
 
     if psi_soil < -10:
         psi_soil = -10

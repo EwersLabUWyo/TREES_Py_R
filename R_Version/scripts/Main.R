@@ -1,13 +1,29 @@
 
 rm(list=ls())
+
+#Set directory of scripts
+script_dir <- dirname(sys.frame(1)$ofile)
+
+# Move up one directory(will work if your dir is formatted like ours)
+setwd("..")
+
+# Set directory of data
+data_dir <- file.path(getwd(), "data")
+
+# Set working directory to data
+setwd(file.path(data_dir))
+
 #Get water stress simulation
-source('~/GitHub/TREES_Py_R/R_Version_Project/water_stress_module_v_0_5.R')
+pathname <- file.path(script_dir, 'water_stress_module_v_0_5.R')
+source(pathname)
 
 #Get xylem scalar
-source('~/GitHub/TREES_Py_R/R_Version_Project/blue_stain_xylem_scaling_module_v1.R')
+pathname <- file.path(script_dir, 'blue_stain_xylem_scaling_module_v1.R')
+source(pathname)
 
 #Get Gs_ref
-source('~/GitHub/TREES_Py_R/R_Version_Project/Gs_ref_module_v_0_6.R')
+pathname <- file.path(script_dir, 'Gs_ref_module_v_0_6.R')
+source(pathname)
 
 #calculate water stress simulation
 ws_sim <- water_stress(psi_obs,plc_obs)
@@ -45,7 +61,7 @@ while (curr_len < goal_len)
   { 
     while (j <= time_steps)
   {
-    append(D_extend, D_obs [i])
+    D_extend <- append(D_extend, D_obs [i])
     j <- j + 1
   }
   j <- 1
@@ -56,12 +72,12 @@ while (curr_len < goal_len)
 
 while (rem > 0)
 {
-  append(D_extend, D_obs[i-1])
+  D_extend <- append(D_extend, D_obs[i-1])
   rem <- rem - 1
 }
 
 # calculate gsv0 for each time step
-gsv_0 <- ws.sim * Gs_ref - (m * log(D_extend)) 
+gsv_0 <- ws_sim * Gs_ref - (m * log(D_extend)) 
 
 print(gsv_0)
 
