@@ -19,8 +19,9 @@ import water_stress_module as wsmod
 import gs_ref_module as gsr
 import gsv0
 
+
 # define working directory
-work_dir = 'C:\\Users\\Matthew\\Documents\\Github\\TREES_Py_R-1'
+work_dir = 'C:\\Users\\Someone\\Documents\\Github\\TREES_Py_R'
 work_dir += '\\Python3_Version\\data'
 
 # xs calculates/stores a simulated xylem scalar model and its plot against the

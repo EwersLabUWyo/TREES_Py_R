@@ -2,7 +2,7 @@
 rm(list=ls())
 
 #Set directory of scripts
-script_dir <- dirname("C:\\Users\\Someone\\Documents\\Github\\TREES_Py_R\\scripts")
+script_dir <- file.path("C:\\Users\\Someone\\Documents\\Github\\TREES_Py_R\\R_Version\\scripts")
 
 # Move up one directory(will work if your dir is formatted like ours)
 setwd(script_dir)
