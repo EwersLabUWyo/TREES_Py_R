@@ -6,6 +6,9 @@
 # Refactored to unpack variables here instead of in main.  Also, improved
 # documentation.
 
+# Update September 22, 2016
+# Moved calcutation into init to create uniformity in TREES.py
+
 import sys
 import traceback
 
@@ -95,7 +98,10 @@ class Gsv_0(object):
         self.gs['sim'] = gs.gs_sim
         self.gs['ref'] = gs.gs_ref
         self.d_obs = gs.d_obs
-        self.r_sqrs['gs'] = gs.r_sqr        
+        self.r_sqrs['gs'] = gs.r_sqr
+        
+        #Calculate gsv0
+        self.calculate()
       
         
     def calculate(self):

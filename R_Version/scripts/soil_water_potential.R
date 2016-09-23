@@ -43,15 +43,16 @@ soil_water_potential <- function(porosity, bubbling_pressure, pore_size_index, r
     #################################
     
     S <- (theta - residual) / (porosity - residual)
-    
-    if (S < 0.001)
-    {
-        S <- 0.001
-    }   
-    else if (S > 1.0)
-    {
-        S <- 1.0
-    }
+    ###########BUG START###################
+    for (s in 1:length(S))
+      if (s < 0.001)
+      {
+          S[s] <- 0.001
+      }   
+      else if (s > 1.0)
+      {
+          S[s] <- 1.0
+      }
     
     n <- pore_size_index + 1
     m <- pore_size_index / n
@@ -62,11 +63,12 @@ soil_water_potential <- function(porosity, bubbling_pressure, pore_size_index, r
     sPow <- ((S ^ (-1/m)) - 1)    
     psi_soil <- psi_soil * (sPow ^ (1/n))
     
-    if (psi_soil < -10)
-    {
-        psi_soil <- -10
-    }
-        
+    for (p in 1:length(psi_soil))
+      if (p < -10)
+      {
+          psi_soil[p] <- -10
+      }
+    ######################################BUG END##########################
     return(psi_soil)
 }
 
@@ -148,7 +150,9 @@ residual <- residual -  0.0023584*por2*pClay
 
 
 # Theta will be calculated elsewhere, but for now we are hardcoding it in
-theta <- c(0.4,0.1,0.3,0.1,0.2,0.1,0.1,0.1,0.1,0.1)
+# theta <- c(0.4,0.1,0.3,0.1,0.2,0.1,0.1,0.1,0.1,0.1)
+theta <- read.csv("TEST_DATA_090216-Edit.csv")
+theta <- theta$"0-15_cm_VWC"
 
 #create object for S
 S <- numeric(length(theta))
@@ -176,6 +180,6 @@ for(i in 1:length(ku))
   ku[i] <- (ks * Sn[i] * Sm[i])
 }
 
-psi_soil <- soil_water_potential(por, bubbling_pressure, pore_size_index, residual)
+psi_soil <- soil_water_potential(por, bubbling_pressure, pore_size_index, residual, theta = theta)
 
 print(psi_soil)               

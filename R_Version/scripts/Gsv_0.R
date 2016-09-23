@@ -26,6 +26,13 @@ source(pathname)
 pathname <- file.path(script_dir, 'Gs_ref_module_v_0_6.R')
 source(pathname)
 
+#Get soil_water_potential
+pathname <- file.path(script_dir, "soil_water_potential.R")
+source(pathname)
+
+#calculate soil water potential
+swp <- soil_water_potential
+
 #calculate water stress simulation
 ws_sim <- water_stress(psi_obs,plc_obs)
 ws_obs <- 1-(plc_obs/100)
@@ -43,9 +50,6 @@ Gs_ref <- Gs_ref_func(D_obs,Gs_obs)
 
 # calculate m scalar                            
 m = Gs_ref * 0.6
-
-
-#### From here down it doesn't work. Something is wrong with my logic in R####
 
 # duplicate d_obs readings to match size of Gs_ref
 ws_sim_len <- as.integer(length(ws_sim))
@@ -80,5 +84,5 @@ while (rem > 0)
 # calculate gsv0 for each time step
 gsv_0 <- ws_sim * Gs_ref - (m * log(D_extend)) 
 
-print(gsv_0)
+#print(gsv_0)
 

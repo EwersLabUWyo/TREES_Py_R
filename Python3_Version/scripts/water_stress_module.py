@@ -126,6 +126,8 @@ class WaterStress(object):
     
         # simulate the percent decline in sap flux as a function of decreasing
         # soil water potential
+        #TODO: Refactor into function and use swp data to find new model with
+        # Simulated parameters
         self.sim = 1-((100/(1+a*exp(b*psi_obs)))/100)
         self.obs = obs = 1-(plc_obs/100)
         # Add column of zeros to simulate y-intercept?

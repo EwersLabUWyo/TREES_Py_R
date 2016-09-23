@@ -98,7 +98,7 @@ class GsRef(object):
         """
         
         # set the current working directory - make sure to change this as needed
-        chdir(work_dir)        
+        chdir(work_dir)      
         
         try:
             # read in the vapor pressure deficit (VPD) and non-water-stressed, 
