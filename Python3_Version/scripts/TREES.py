@@ -42,6 +42,9 @@ swp = sw_pot.SoilWaterPotential(work_dir, "TEST_DATA_090216-Edit.csv")
 # observed data
 ws = wsmod.WaterStress(work_dir, 'PICO_ws_obs_data.csv')
 
+#Use Soil water potential psi values to recalculate the ws simulation
+ws.simFunc(swp.psi_soil)
+
 # calculate and store gs_ref and the results               
 gs = gsr.GsRef(work_dir, 'PICO_atm_demand_data.csv')
 

@@ -128,7 +128,7 @@ class WaterStress(object):
         # soil water potential
         #TODO: Refactor into function and use swp data to find new model with
         # Simulated parameters
-        self.sim = 1-((100/(1+a*exp(b*psi_obs)))/100)
+        self.simFunc(psi_obs)
         self.obs = obs = 1-(plc_obs/100)
         # Add column of zeros to simulate y-intercept?
         obs_stacked = column_stack((obs, ones_like(obs)))
@@ -138,6 +138,14 @@ class WaterStress(object):
         self.r_sqr = summary.rsquared
     
     
+    def simFunc(self, psi):
+        """Updates the current simulated model using a vector of psi's"""
+        a = self.coeff['a']
+        b = self.coeff['b']
+        tmp = (100 / (1 + a * exp(b * psi)))
+        self.sim = 1-(tmp/100)
+
+
     def plot(self):
         """
         Plots and saves the plot for later use

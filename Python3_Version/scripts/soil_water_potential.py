@@ -9,6 +9,13 @@ mattheworion.cook@gmail.com
 # TEST_DATA_090216-Edit.csv
 # Also, refactored to be Object-Oriented.
 
+# Update September 27, 2016
+# Moved simulation calculation into simFunc for outside use with soil water
+# potential data.
+
+# TODO: Decide whether or not we need to recalculate R^2 everytime we change
+# the simulation data?
+
 # TODO: Refactor for input of user-inputted variables (hard-coded right now)
 # TODO: Maybe refactor calculations out of init into different methods/functions
 

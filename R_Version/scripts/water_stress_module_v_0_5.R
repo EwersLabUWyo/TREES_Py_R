@@ -6,6 +6,11 @@
 #        - Non-linear least squares regression are currently used to determine empirical model
 #          parameter estimates.  
 
+
+# Update September 29, 2016 - Matt Cook
+# Extracted simFunc function for reuse of simulation calculation, moved R2 calculation
+# from Main in here.
+
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 #                                                                                                                  #
 # Module to simulate percent decline in stomatal conductance (water stress) due to declining soil water potential. #
@@ -34,6 +39,12 @@ psi_obs <-plc_data$"psi_obs"
 plc_obs <- plc_data$"plc_obs"
 
 
+# Calculate the simulated model using psi values
+simFunc <- function(a, b, psi){
+  tmp <- 100/(1+a*exp(b*psi_obs))
+  return (1-(tmp/100))
+}
+
 #-----------------------------------------------------------------------------------------------------
 
 #:::::::::::::::::::::::::::::::::#
@@ -49,12 +60,21 @@ water_stress <- function(psi_obs,plc_obs){
   plc.paras <- coef(plc.fit)
   a <- plc.paras[1]
   b <- plc.paras[2]
-  print(a)
-  print(b)
+  #FOR DEBUGGING
+ # print(a)
+ # print(b)
   
   # simulate the percent decline in sap flux as a function of decreasing soil water potential
-  ws_sim <- 1-((100/(1+a*exp(b*psi_obs)))/100)
-  return(ws_sim)
+  ws_sim <- simFunc(a, b, psi_obs)
+  
+  ws_obs <- 1-(plc_obs/100)
+  
+  #calculate R^2 for water stress
+  eval <- summary(lm(ws_sim_orig~ws_obs))
+  R2 <- eval$r.squared
+  R2
+  
+  return(list(a, b,ws_sim))
   
 }
 

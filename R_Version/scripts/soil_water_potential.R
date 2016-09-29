@@ -4,8 +4,11 @@
 # mattheworion.cook@gmail.com #
 ###############################
 
+# Update September 29, 2016
+# Fixed theta bug (name issue) and removed function definition due to lack of necessity.
+
 #Remove the following line when using in Main.R
-rm(list=ls())
+#rm(list=ls())
 
 calcSn <- function(S, n)
 {
@@ -34,43 +37,6 @@ calcSm <- function(S, m)
   return(Sm)
 }
 
-#Calculate water potential, MPa
-#Assues bubbling pressure in cm
-soil_water_potential <- function(porosity, bubbling_pressure, pore_size_index, residual, theta=1)
-{
-    #################################
-    #Calculate soil water potential.#
-    #################################
-    
-    S <- (theta - residual) / (porosity - residual)
-    ###########BUG START###################
-    for (s in 1:length(S))
-      if (s < 0.001)
-      {
-          S[s] <- 0.001
-      }   
-      else if (s > 1.0)
-      {
-          S[s] <- 1.0
-      }
-    
-    n <- pore_size_index + 1
-    m <- pore_size_index / n
-
-    #Use van Ganuchten model of soil water potential
-    psi_soil <- -0.0001019977334*bubbling_pressure 
-    
-    sPow <- ((S ^ (-1/m)) - 1)    
-    psi_soil <- psi_soil * (sPow ^ (1/n))
-    
-    for (p in 1:length(psi_soil))
-      if (p < -10)
-      {
-          psi_soil[p] <- -10
-      }
-    ######################################BUG END##########################
-    return(psi_soil)
-}
 
 # Define user-inputted variables (hard-code for now)
 por <- 0.5 #porosity
@@ -151,8 +117,8 @@ residual <- residual -  0.0023584*por2*pClay
 
 # Theta will be calculated elsewhere, but for now we are hardcoding it in
 # theta <- c(0.4,0.1,0.3,0.1,0.2,0.1,0.1,0.1,0.1,0.1)
-theta <- read.csv("TEST_DATA_090216-Edit.csv")
-theta <- theta$"0-15_cm_VWC"
+theta_data <- read.csv("TEST_DATA_090216-Edit.csv")
+theta <- theta_data$"X0.15_cm_VWC"
 
 #create object for S
 S <- numeric(length(theta))
@@ -180,6 +146,38 @@ for(i in 1:length(ku))
   ku[i] <- (ks * Sn[i] * Sm[i])
 }
 
-psi_soil <- soil_water_potential(por, bubbling_pressure, pore_size_index, residual, theta = theta)
+#Calculate water potential, MPa
+#Assues bubbling pressure in cm
 
-print(psi_soil)               
+#################################
+#Calculate soil water potential.#
+#################################
+
+S <- (theta - residual) / (por - residual)
+
+for (s in 1:length(S))
+  if (s < 0.001)
+  {
+    S[s] <- 0.001
+  } else if (s > 1.0)
+    {
+      S[s] <- 1.0
+    }
+
+n <- pore_size_index + 1
+m <- pore_size_index / n
+
+#Use van Ganuchten model of soil water potential
+psi_soil <- -0.0001019977334*bubbling_pressure 
+
+sPow <- ((S ^ (-1/m)) - 1)    
+psi_soil <- psi_soil * (sPow ^ (1/n))
+
+for (p in 1:length(psi_soil))
+  if (p < -10)
+  {
+    psi_soil[p] <- -10
+  }
+
+
+#print(psi_soil)               
