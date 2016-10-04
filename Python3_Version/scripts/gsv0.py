@@ -71,12 +71,13 @@ class Gsv_0(object):
                 
                 self.r_sqrs['ws']
         
-        TO DO:
-            Include Xylem Scalar in final calculation.  Sizes do not match, so 
-            maybe look into doing the same as other array?
             
     """
-    
+
+#TO DO:
+#Include Xylem Scalar in final calculation.  Sizes do not match, so 
+#maybe look into doing the same as other array?    
+
     def __init__(self,
                  xs,
                  ws,

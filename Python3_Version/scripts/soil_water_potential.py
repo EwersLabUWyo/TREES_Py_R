@@ -19,12 +19,38 @@ mattheworion.cook@gmail.com
 # TODO: Refactor for input of user-inputted variables (hard-coded right now)
 # TODO: Maybe refactor calculations out of init into different methods/functions
 
+# TODO: Dave, please update the information in the Attributes below
+
 from math import exp
 from os import chdir
 from pandas import read_csv
 
+"""
+Module for estimating the soil water potential in MPa.  Uses 
+"""
 
 class SoilWaterPotential(object):
+    """
+    Stores information about the Soil Water Potential calculations.  
+    
+    Args:
+        work_dir(string):
+            Path of directory in which to look for/store files
+            
+        swp_csv(string):
+            filename of .csv file with theta values in column named:
+                "0-15_cm_VWC"
+    
+    Attributes:
+        psi_soil (numpy array): 
+            The calculated soil water potential.
+        ku (numpy array): 
+            (Needs explanation)
+        Sn (numpy array): 
+            (Needs explanation)
+        Sm (numpy array):  
+            (Needs explanation)
+    """
     
     def __init__(self, work_dir, swp_csv):
         # Define user-inputted variables (hard-code for now)
@@ -124,6 +150,9 @@ class SoilWaterPotential(object):
         #using the generators above, calculate each index of ku
         self.ku = [(ks * sn * sm) for sn, sm in zip(Sn, Sm)]
         
+        # Kept function with return value for clarity of what is happening
+        # for better design, one would not return anything, but just assign
+        # to psi_soil from withing __soil_water_potential
         self.psi_soil = self.__soil_water_potential(por,
                                                      bubbling_pressure, 
                                                      pore_size_index,
@@ -158,10 +187,13 @@ class SoilWaterPotential(object):
                                theta=2):
         """
         Calculate soil water potential, MPa. Assumes bubbling pressure in cm
+        
+        Returns: 
+            psi_soil (numpy array)
         """
         
         #initialize variables
-    #    psi_soil, n, m, S = None
+        #psi_soil, n, m, S = None
         
         S = (theta - residual) / (porosity - residual)
         
@@ -179,6 +211,7 @@ class SoilWaterPotential(object):
         psi_soil = -0.0001019977334*bubbling_pressure 
     
         sPow = S ** (-1/m) - 1    
+        #Multiply psi_soil by sPow ^ (1/n)
         psi_soil *= sPow ** (1/n)
         
         # If psi_soil is 0.0, it is actually -0.0
